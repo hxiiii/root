@@ -304,5 +304,7 @@ int main()
 {
     router G;
     menu(G);
+    G.createVertices();
+    G.createEdges();
     return 0;
 }
