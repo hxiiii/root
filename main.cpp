@@ -32,7 +32,7 @@ private:
     int size;//the number of roots(it changes with the using of function delet and add)
     info router_info[20];//the information of routers
 public:
-    router()=default;
+    router();
     void deleteVertex();
     void deleteEdge();
     void addVertex();
@@ -50,12 +50,20 @@ public:
     }
 };
 
-/*router::router()
+router::router()
 {
     int i,j;
-    for(i=0; i<)
+    for(i=0; i<20; i++)
+        for(j=0; j<20; j++)
+        {
+            if(i==j)table[i][j]=0;
+            else table[i][j]=maxWeight;
+        }
+    for(i=0; i<20; i++)
+        router_info[i].num=0;
+    size=0;
+}
 
-    }*/
 
 void router::calculate()
 {
@@ -129,9 +137,9 @@ void router::addVertex()
         return;
     }
     cout<<"please enter routing information :"<<endl;
-    cout<<"IP: "<<endl;
+    cout<<"IP: ";
     cin>>router_info[size].ip;
-    cout<<"Number: "<<endl;
+    cout<<"Number: ";
     cin>>router_info[size].num;
     for(i=0; i<size; i++)
     {
@@ -165,33 +173,29 @@ void router::addEdge()
         cout<<"enter IP source information error!"<<endl;
         return;
     }
-    else if(table[v][t]!=0&&table[v][t]<maxWeight)table[v][t]=table[t][v]=c;
+    else if(v!=t)table[v][t]=table[t][v]=c;
     save();
-}
-
-void menu(router &G)
-{
-    return ;
 }
 
 void router::createVertices()
 {
-    int i=0,j,tag=1;
-    cout<<"please enter routing information :"<<endl;
+    int i=0,j=0,tag;
+    cout<<"please enter routing information :enter 0 to exit"<<endl;
+    cin>>tag;
     while(tag)
     {
         cout<<"IP: "<<endl;
         cin>>router_info[i++].ip;
         cout<<"Number: "<<endl;
-        cin>>router_info[i++].num;
-        cout<<"enter "0" to exit"<<endl;
+        cin>>router_info[j++].num;
+        cout<<"enter 0 to exit"<<endl;
         cin>>tag;
         size++;
     }
     ofstream out("rout_info.txt");
     if(out.is_open())
     {
-        for(j=0; j<i; j++)
+        for(j=0; j<size; j++)
             out<<router_info[j].ip<<" "<<router_info[j].num<<endl;;
     }
     out.close();
@@ -211,17 +215,17 @@ void router::createEdges()
     cout<<"please enter path information :";
     while(tag)
     {
-        cout<<endl<<"enter IP source : ";
+        cout<<endl<<"enter IP source :";
         cin>>a;
-        cout<<endl<<"enter IP destination : ";
+        cout<<endl<<"enter IP destination :";
         cin>>b;
-        cout<<endl<<"enter const: ";
+        cout<<endl<<"enter const:";
         cin>>c;
-        cout<<endl<<"enter "0" to exit!  ";
+        cout<<endl<<"enter 0 to exit!  ";
         cin>>tag;
         v=getVertexPos(a);
         t=getVertexPos(b);
-        if(v!=-1&&t!=-1)
+        if(v!=-1&&t!=-1&&v!=t)
         {
             table[v][t]=c;
             table[t][v]=c;
@@ -260,6 +264,7 @@ void router::createGraph()
         i++;
         size++;
     }
+    size=size-1;
     in.close();
     ifstream fin("rout_path.txt");
     if(!fin)
@@ -283,7 +288,7 @@ void router::save()
     ofstream out("rout_info.txt");
     if(out.is_open())
     {
-        for(i=0; j<size; i++)
+        for(i=0; i<size; i++)
             out<<router_info[i].ip<<" "<<router_info[i].num<<endl;
     }
     out.close();
@@ -300,11 +305,71 @@ void router::save()
     }
     fout.close();
 }
+void menu(router &G)
+{
+    system("cls");
+    int i,n;
+    cout <<"                 |-------------W E L C O M E !-------------|"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |  Function choices:                      |"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |  1.Print the routing information base   |"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |  2.Add a router                         |"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |  3.Delete a router                      |"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |  Please enter the number your choose:   |"<<endl;
+    cout <<"                 |                                         |"<<endl;
+    cout <<"                 |------------Thanks for using!------------|"<<endl;
+    cout <<"                                                            "<<endl;
+    cout <<"                --> Your choice is :";
+    cin >>i;
+    switch(i)
+    {
+    case 1:
+        cout <<"test1"<<endl;
+        break;
+    case 2:
+        cout <<"test2"<<endl;
+        cout<<"1:add router 2:add information of weight"<<endl;
+        cin>>n;
+        if(n==1)G.addVertex();
+        else if(n==2)G.addEdge();
+        else cout<<"wrong enter"<<endl;
+        break;
+    case 3:
+        cout <<"test3"<<endl;
+        cout<<"1:delete router 2:delete information of weight"<<endl;
+        cin>>n;
+        if(n==1)G.deleteVertex();
+        else if(n==2)G.deleteEdge();
+        else cout<<"wrong enter"<<endl;
+        break;
+    default:
+        cout <<"            --> Please enter the correct number"<<endl;
+    }
+    menu(G);
+}
+
 int main()
 {
     router G;
+    int n;
+    cout<<"How do you want to initialization: 1: from keyboard 2: from file"<<endl;
+    cin>>n;
+    switch(n)
+    {
+    case 1:
+        G.createVertices();
+        G.createEdges();
+        break;
+    case 2:
+        G.createGraph();
+        break;
+    default:
+        cout<<"wrong enter!"<<endl;
+    }
     menu(G);
-    G.createVertices();
-    G.createEdges();
     return 0;
 }
